@@ -14,3 +14,14 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+
+/*
+  ソーシャルライトの認証に使うURL
+*/
+Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->name('socialite');
+Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->name('socialite.callback');
