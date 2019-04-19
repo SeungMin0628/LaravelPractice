@@ -69,7 +69,10 @@
                         <a href="{{ route('socialite', ['provider' => 'facebook']) }}" title="socialite_facebook">continue with facebook</a>
                     </div>
                     <div>
-                        <a href="{{ route('socialite.callback', ['provider' => 'github']) }}" title="socialite_github">continue with github</a>
+                        <a href="{{ route('socialite', ['provider' => 'github']) }}" title="socialite_github">continue with github</a>
+                    </div>
+                    <div>
+                        <a href="{{ route('socialite', ['provider' => 'google']) }}" title="socialite_google">continue with google</a>
                     </div>
                 </div>
             </div>

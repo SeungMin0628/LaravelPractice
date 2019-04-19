@@ -45,14 +45,20 @@ return [
     ],
 
     'facebook' => [
-        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_id'     => env('FACEBOOK_CLIENT_ID'),
         'client_secret' => env('FACEBOOK_SECRET'),
-        'redirect' => env('FACEBOOK_CALLBACK'),
+        'redirect'      => env('FACEBOOK_CALLBACK'),
     ],
 
     'github' => [
-        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_id'     => env('GITHUB_CLIENT_ID'),
         'client_secret' => env('GITHUB_SECRET'),
-        'redirect' => env('GITHUB_CALLBACK'),
+        'redirect'      => env('GITHUB_CALLBACK'),
+    ],
+
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_SECRET'),
+        'redirect'      => env('GOOGLE_CALLBACK'),
     ],
 ];
