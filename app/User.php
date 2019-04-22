@@ -10,6 +10,7 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    // 01. テーブルの属性を定義
     /**
      * The attributes that are mass assignable.
      *
@@ -37,7 +38,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // 02. テーブルの間の関係を記述
     public function identifies() {
         return $this->hasMany('App\SocialIdentify');
+    }
+
+    public function friends() {
+        return $this->hasMany('App\Friend', 'owner_id', 'id');
     }
 }
