@@ -17,14 +17,12 @@ class CreateChatParticipantsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('chat_room_id')->unsigned();
-            $table->bigInteger('start_chat_id')->unsigned()->unique();
             $table->string('name')->nullable();
             $table->boolean('get_push_alarm')->default(true);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('chat_room_id')->references('id')->on('chat_rooms');
-            $table->foreign('start_chat_id')->references('id')->on('chats');
 
             $table->unique(['user_id', 'chat_room_id']);
         });
