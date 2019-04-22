@@ -15,7 +15,7 @@ class CreateChatRoomsTable extends Migration
     {
         Schema::create('chat_rooms', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('owner_id')->unsigned();
+            $table->bigInteger('owner_id')->unsigned()->nullable();
             $table->boolean('is_opened')->default(false);
             $table->string('name')->nullable();
             $table->timestamps();

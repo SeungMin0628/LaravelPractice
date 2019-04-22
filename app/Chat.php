@@ -13,6 +13,6 @@ class Chat extends Model
 
   // テーブルの間の関係を記述
   public function participant() {
-    return $this->belongsTo('App\ChatParticipant');
+    return $this->belongsTo('App\ChatParticipant', 'participant_id', 'id');
   }
 }

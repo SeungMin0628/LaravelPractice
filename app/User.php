@@ -46,4 +46,16 @@ class User extends Authenticatable
     public function friends() {
         return $this->hasMany('App\Friend', 'owner_id', 'id');
     }
+
+    public function participants() {
+        return $this->hasMany('App\ChatParticipant', 'user_id', 'id');
+    }
+
+    public function myRooms() {
+        return $this->hasMany('App\ChatRoom', 'owner_id', 'id');
+    }
+
+    public function participatingRooms() {
+        return $this->hasManyThrough('App\ChatRoom', 'App\ChatParticipant', 'user_id', 'id', 'id', 'chat_room_id');
+    }
 }

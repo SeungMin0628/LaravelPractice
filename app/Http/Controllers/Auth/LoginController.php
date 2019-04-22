@@ -30,7 +30,11 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
+
+    protected function redirectTo() {
+        return route('chatrooms.index');
+    }
 
     /**
      * Create a new controller instance.
@@ -80,6 +84,6 @@ class LoginController extends Controller
 
         $authUser = $this->findOrCreateUser($user, $provider);
         Auth::login($authUser, true);
-        return $this->redirectTo();
+        return redirect($this->redirectTo());
     }
 }

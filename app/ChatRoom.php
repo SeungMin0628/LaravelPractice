@@ -16,11 +16,12 @@ class ChatRoom extends Model
     return $this->belongsTo('App\User', 'owner_id', 'id');
   }
 
-  public function chats() {
-    return $this->hasMany('App\Chat');
+  public function participants() {
+    return $this->hasMany('App\ChatParticipant');
   }
 
-  public function chatParticipants() {
-    return $this->hasMany('App\ChatParticipant');
+  // 03. インスタンスメッソドを定義
+  public function getUsersName($argCurrentUserId) {
+    return $this->participants()->with('user')->whereNot('user_id', $argCurrentUserId);
   }
 }
