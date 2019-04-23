@@ -31,7 +31,7 @@
 
   {{-- チャット送信 --}}
   <div>
-    {{ Form::open(['route' => ['chatrooms.chats.store', 1], 'mehtod' => 'post']) }}
+    {{ Form::open(['route' => ['chatrooms.chats.store', $chatroom], 'mehtod' => 'post']) }}
     {{ Form::text('message') }}
     {{ Form::submit('send') }}
     {{ Form::close() }}

@@ -84,10 +84,10 @@ class ChatRoomsController extends Controller
 
     // 02. 最新のチャットの順番で整列
     usort($chatrooms, function($a, $b) {
-      $aTime = Carbon::create($a['last_chat_time']);
-      $bTime = Carbon::create($b['last_chat_time']);
+      $aTime = Carbon::createFromFormat('Y-m-d H:i:s', $a['last_chat_time']);
+      $bTime = Carbon::createFromFormat('Y-m-d H:i:s', $b['last_chat_time']);
 
-      return $aTime->gt($bTime);
+      return $aTime->lt($bTime);
     });
 
     // 03. データをビュー側に返還
@@ -143,6 +143,7 @@ class ChatRoomsController extends Controller
     return view('chatrooms.show')->with([
       'chats'         => $chats,
       'participants'  => $participants,
+      'chatroom'      => $argId,
     ]);
   }
 
@@ -177,16 +178,16 @@ class ChatRoomsController extends Controller
   public function store(Request $request) {
     // 01. 変数の設定
     $user = User::find(Auth::user()->id);
-    $friends = [];
+    $friends = [$user];
 
-    if(sizeof($request->post('friends')) > 1) {
-      // 招いた友達が2人以上の場合
-      foreach($request->post('friends')  as $friendId) {
-        $friends[] = $user->friends()->where('friend_id', $friendId)->first();
-      }
-    } else {
+    if(sizeof($request->post('friends')) <= 1) {
       // 招いた友達が1人しかいない場合
       // あの友達とのチャットルームがあるかどうかを確認する
+    }
+
+
+    foreach($request->post('friends')  as $friendId) {
+      $friends[] = $user->friends()->where('friend_id', $friendId)->first()->user;
     }
 
     // 02. チャットルームを生成
@@ -199,14 +200,14 @@ class ChatRoomsController extends Controller
     foreach($friends as $friend) {
       // 参加者の情報を登録
       $participant = ChatParticipant::create([
-        'user_id'       => $friend->user->id,
+        'user_id'       => $friend->id,
         'chat_room_id'  => $chatroom->id,
       ]);
 
       // 招待メッセージを登録
       Chat::create([
         'participant_id'      => $participant->id,
-        'message'             => "{$friend->user->name}様がお入りになりました。",
+        'message'             => "{$friend->name}様がお入りになりました。",
         'is_system_message'   => true,
       ]);
     }
