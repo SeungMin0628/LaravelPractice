@@ -12,7 +12,7 @@ class Friend extends Model
   ];
 
   // 02. テーブルの間の関係を記述
-  // public function owner() {
-  //   return $this->belongsTo('App\User', 'owner_id', 'id');
-  // }
+  public function user() {
+    return $this->belongsTo('App\User', 'friend_id', 'id');
+  }
 }

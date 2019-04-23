@@ -14,12 +14,15 @@
 
   {{-- チャットルームのリスト --}}
   <div>
+    <div>
+      <a href="{{ route('chatrooms.create') }}" title="">create chat room</a>
+    </div>
     <ul>
       @foreach($chatrooms as $chatroom)
       <li name="li_chatroom" data-id="{{ $chatroom['id'] }}">
         {{-- ID --}}
         <div>
-          {{ $chatroom['id'] }}
+          <a href="{{ route('chatrooms.show', $chatroom['id']) }}" title="">chat</a>
         </div>
         {{-- 名前 --}}
         <div>

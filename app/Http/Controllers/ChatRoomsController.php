@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\ChatRoom;
 use App\User;
 use App\ChatParticipant;
+use App\Chat;
 
 use Auth;
 use Carbon;
@@ -159,11 +160,58 @@ class ChatRoomsController extends Controller
 
   // チャットルームを作るフォームを表示
   public function create() {
+    $friends = User::find(Auth::user()->id)->friends()->with('user')->get()->all();
 
+    return view('chatrooms.create')->with([
+      'friends' => $friends,
+    ]);
   }
 
   // チャットルームを生成
-  public function store() {
+  /*
+    セキュリティーのイシュー
+    =  他人のアカウントのIDをわかれば、
+       自分の友たちではない人も招くことができる
+        => 自分の友たちではない場合、要請を拒否する
+  */
+  public function store(Request $request) {
+    // 01. 変数の設定
+    $user = User::find(Auth::user()->id);
+    $friends = [];
 
+    if(sizeof($request->post('friends')) > 1) {
+      // 招いた友達が2人以上の場合
+      foreach($request->post('friends')  as $friendId) {
+        $friends[] = $user->friends()->where('friend_id', $friendId)->first();
+      }
+    } else {
+      // 招いた友達が1人しかいない場合
+      // あの友達とのチャットルームがあるかどうかを確認する
+    }
+
+    // 02. チャットルームを生成
+    $chatroom = ChatRoom::create([
+      'owner_id'  => $user->id,
+      'is_opened' => $request->post('is_opened'),
+    ]);
+
+    // 03. 招いた友達をチャットの参加者として登録
+    foreach($friends as $friend) {
+      // 参加者の情報を登録
+      $participant = ChatParticipant::create([
+        'user_id'       => $friend->user->id,
+        'chat_room_id'  => $chatroom->id,
+      ]);
+
+      // 招待メッセージを登録
+      Chat::create([
+        'participant_id'      => $participant->id,
+        'message'             => "{$friend->user->name}様がお入りになりました。",
+        'is_system_message'   => true,
+      ]);
+    }
+
+    // 関数を終了し、元の画面に戻る
+    return redirect(route('chatrooms.show', $chatroom->id));
   }
 }
