@@ -44,20 +44,6 @@
       @endforeach
     </ul>
   </div>
-
-  {{-- チャットルーム --}}
-  <div>
-    {{-- メッセンジャ画面ー --}}
-    <div>
-      <ol id='ol_messages_list'>
-      </ol>
-    </div>
-    {{-- 参加者リスト --}}
-    <div>
-      <ol id='ol_participants_list'>
-      </ol>
-    </div>
-  </div>
 </section>
 
 {{-- デスクトップの場合：選んだチャットを表示 --}}

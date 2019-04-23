@@ -26,4 +26,4 @@ Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCall
 Route::get('/', 'ChatRoomsController@index');
 Route::resource('chatrooms', 'ChatRoomsController');
 Route::get('/chatrooms/friends/{friends}', 'ChatRoomsController@startChatWithFriend');
-// Route::resource('chatrooms.chats', 'ChatsController');
+Route::resource('chatrooms.chats', 'ChatsController')->only(['store']);

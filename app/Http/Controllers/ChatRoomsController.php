@@ -139,7 +139,7 @@ class ChatRoomsController extends Controller
     }
 
     // 04. データをビュー側に伝送
-    return response()->json([
+    return view('chatrooms.show')->with([
       'chats'         => $chats,
       'participants'  => $participants,
     ]);
