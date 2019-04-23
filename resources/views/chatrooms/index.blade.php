@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-@section('header')
-@endsection
-
 @section('content')
 {{-- 主なインタフェース --}}
 <section>
@@ -13,8 +10,35 @@
   </div>
   {{-- チャットルームのリスト --}}
   <div>
+    <ul>
     @foreach($chatrooms as $chatroom)
+    <li>
+      {{-- ID --}}
+      <div>
+        {{ $chatroom['id'] }}
+      </div>
+      {{-- 名前 --}}
+      <div>
+        @if(is_null($chatroom['name']))
+        NULL
+        @else
+        {{ $chatroom['name'] }}
+        @endif
+      </div>
+      {{-- プロフィル写真 --}}
+      <div>
+        profile
+      </div>
+      {{-- 最新のチャット --}}
+      <div>
+        {{ $chatroom['message'] }}
+      </div>
+      <div>
+        {{ $chatroom['last_chat_time'] }}
+      </div>
+    </li>
     @endforeach
+  </ul>
   </div>
 </section>
 

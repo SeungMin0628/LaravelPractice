@@ -20,8 +20,12 @@ class ChatRoom extends Model
     return $this->hasMany('App\ChatParticipant');
   }
 
-  // 03. インスタンスメッソドを定義
-  public function getUsersName($argCurrentUserId) {
-    return $this->participants()->with('user')->whereNot('user_id', $argCurrentUserId);
+  public function chats() {
+    return $this->hasManyThrough('App\Chat', 'App\ChatParticipant', 'chat_room_id', 'participant_id', 'id', 'id');
   }
+
+  // 03. インスタンスメッソドを定義
+  // public function getUsersName($argCurrentUserId) {
+  //   return $this->participants()->with('user')->whereNot('user_id', $argCurrentUserId);
+  // }
 }

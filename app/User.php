@@ -58,4 +58,9 @@ class User extends Authenticatable
     public function participatingRooms() {
         return $this->hasManyThrough('App\ChatRoom', 'App\ChatParticipant', 'user_id', 'id', 'id', 'chat_room_id');
     }
+
+    // 03. インスタンスメッソドを実装
+    public function selectRoomsList() {
+        // return 
+    }
 }
