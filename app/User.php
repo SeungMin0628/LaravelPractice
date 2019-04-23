@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'photo',
     ];
 
     /**
@@ -60,7 +60,4 @@ class User extends Authenticatable
     }
 
     // 03. インスタンスメッソドを実装
-    public function selectRoomsList() {
-        // return 
-    }
 }
