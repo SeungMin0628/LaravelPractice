@@ -71,7 +71,7 @@ class ChatRoomsController extends Controller
         $name = implode(', ', $names);
       }
 
-      $chats = $value->chats()->orderBy('created_at', 'desc')->first();
+      $chats = $value->chats()->orderBy('id', 'desc')->first();
 
       $chatrooms[] = [
         'id' => $value->id,
@@ -141,6 +141,7 @@ class ChatRoomsController extends Controller
 
     // 04. データをビュー側に伝送
     return view('chatrooms.show')->with([
+      'chatroom_id'   => $argId,
       'chats'         => $chats,
       'participants'  => $participants,
       'chatroom'      => $argId,

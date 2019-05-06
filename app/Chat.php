@@ -17,6 +17,10 @@ class Chat extends Model
     return $this->belongsTo('App\ChatParticipant', 'participant_id', 'id');
   }
 
+  public function chatRoom() {
+    return $this->participant->chatRoom();
+  }
+
   // インスタンスメッソドを定義
   public function isUser($argParticipantId) {
     return $this->select(DB::raw("chats.*, case participant_id when {$argUserId} then true else false end as 'is_user'"));

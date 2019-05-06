@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Events\SendMessage;
+
 use App\ChatRoom;
 use App\Chat;
 use App\User;
@@ -32,13 +34,15 @@ class ChatsController extends Controller
     $participant = $chatroom->participantsWhereCurrentUser(Auth::user()->id)->first();
 
     // 02. 必要な情報を登録
-    Chat::create([
+    $chat = Chat::create([
       'participant_id'    => $participant->id,
       'is_system_message' => false,
       'message'           => $request->post('message'),
     ]);
 
+    broadcast(new SendMessage($chat));
+
     // 03. データ保存の結果を返還
-    return redirect(route('chatrooms.show', $argChatRoomId));
+    return response()->json(true);
   }
 }
