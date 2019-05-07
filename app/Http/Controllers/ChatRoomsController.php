@@ -39,44 +39,19 @@ class ChatRoomsController extends Controller
     $chatrooms = [];
     $rooms = User::find(Auth::user()->id)->participatingRooms()->get()->all();
 
-    foreach($rooms as $value) {
+    foreach($rooms as $room) {
       // 必要なデータを獲得
-      $myParticipateInfo = $value->participants()->where('user_id', '=', Auth::user()->id)->first();
-      $participants = $value->participantsWhereCurrentUser(Auth::user()->id, false)->with('user')->get()->all();
+      $myParticipateInfo = $room->participants()->where('user_id', '=', Auth::user()->id)->first();
+      $participants = $room->participantsWhereCurrentUser(Auth::user()->id, false)->with('user')->get()->all();
 
-      // チャットルームの名前を獲得
-      $name = '';
-      if(!is_null($myParticipateInfo->name)) {
-        // 使用者がチャットルームの名前を指定した場合
-        $name = $value->name;
-      } else if (!is_null($value->name)) {
-        // そのチャットルームの名前が定まった場合
-        $name = $value->name;
-      } else {
-        // 定まった名前がない場合 => そのチャットルームの参加者の名前で
-        $names = [];
-      }
+      $roomInfo = $myParticipateInfo->getChatRoomInfo();
 
-      // プロファイル写真を獲得
-      $photos = [];
-      foreach($participants as $participant) {
-        $photos[] = $participant->user->photo;
+      $chats = $room->chats()->orderBy('id', 'desc')->first();
 
-        if(isset($names)) {
-          $names[] = $participant->user->name;
-        }
-      }
-
-      if(isset($names)) {
-        $name = implode(', ', $names);
-      }
-
-      $chats = $value->chats()->orderBy('id', 'desc')->first();
-
-      $chatrooms[] = [
-        'id' => $value->id,
-        'name' => $name,
-        'photos' => $photos,
+      $chatrooms[] = (object)[
+        'id' => $room->id,
+        'name' => $roomInfo->name,
+        'photos' => $roomInfo->photos,
         'message' => $chats->message,
         'last_chat_time' => $chats->created_at,
       ];
@@ -84,8 +59,8 @@ class ChatRoomsController extends Controller
 
     // 02. 最新のチャットの順番で整列
     usort($chatrooms, function($a, $b) {
-      $aTime = Carbon::createFromFormat('Y-m-d H:i:s', $a['last_chat_time']);
-      $bTime = Carbon::createFromFormat('Y-m-d H:i:s', $b['last_chat_time']);
+      $aTime = Carbon::createFromFormat('Y-m-d H:i:s', $a->last_chat_time);
+      $bTime = Carbon::createFromFormat('Y-m-d H:i:s', $b->last_chat_time);
 
       return $aTime->lt($bTime);
     });
@@ -112,7 +87,7 @@ class ChatRoomsController extends Controller
     foreach($participantList as $participant) {
       $user = $participant->user;
 
-      $participants[] = [
+      $participants[] = (object)[
         'id'    => $user->id,
         'name'  => $user->name,
         'photo' => $user->photo,
@@ -122,7 +97,7 @@ class ChatRoomsController extends Controller
     // 03. チャット履歴を検索
     $chatList = $chatroom->chatsWithBooleanIsThisCurrentUser(Auth::user()->id)->orderBy('created_at')->get()->all();
     foreach($chatList as $chat) {
-      $info = [
+      $info = (object)[
         'id'          => $chat->id,
         'message'     => $chat->message,
         'is_user'     => $chat->is_user,
@@ -132,8 +107,8 @@ class ChatRoomsController extends Controller
       if(!$chat->is_user) {
         $user = ChatParticipant::find($chat->participant_id)->user;
 
-        $info['photo'] = $user->photo;
-        $info['name'] = $user->name;
+        $info->photo  = $user->photo;
+        $info->name   = $user->name;
       }
 
       $chats[] = $info;

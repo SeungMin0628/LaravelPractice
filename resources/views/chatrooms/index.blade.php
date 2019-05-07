@@ -19,17 +19,17 @@
     </div>
     <ul>
       @foreach($chatrooms as $chatroom)
-      <li name="li_chatroom" data-id="{{ $chatroom['id'] }}">
+      <li name="li_chatroom" data-id="{{ $chatroom->id }}">
         {{-- ID --}}
         <div>
-          <a href="{{ route('chatrooms.show', $chatroom['id']) }}" title="">chat</a>
+          <a href="{{ route('chatrooms.show', $chatroom->id) }}" title="">chat</a>
         </div>
         {{-- 名前 --}}
         <div>
-          @if(is_null($chatroom['name']))
+          @if(is_null($chatroom->name))
           NULL
           @else
-          {{ $chatroom['name'] }}
+          {{ $chatroom->name }}
           @endif
         </div>
         {{-- プロフィル写真 --}}
@@ -38,10 +38,10 @@
         </div>
         {{-- 最新のチャット --}}
         <div>
-          {{ $chatroom['message'] }}
+          {{ $chatroom->message }}
         </div>
         <div>
-          {{ $chatroom['last_chat_time'] }}
+          {{ $chatroom->last_chat_time }}
         </div>
       </li>
       @endforeach

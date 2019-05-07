@@ -3,17 +3,26 @@
 @section('head')
 <script>
   $(window).on("load", function() {
+    // メッセージのリストのスクロールバーを最下にする
+    function scrollUpdate() {
+      var divMessageArea  = $("#div-message_area");
+      var ulChats         = $('#ul-chats');
+
+      divMessageArea.scrollTop(ulChats.height());
+    }
+
     // メッセージを画面に出力
     function printOutMessage(message, name, created_at) {
       // 01. 変数を定義
-      var olMessagesList  = $('#ol-messages-list');
-      var liElement       = $("<li></li>");
+      var ulChats   = $('#ul-chats');
+      var liElement = $("<li></li>");
 
-      liElement.append(`<div>${message}</div>`);
-      liElement.append(`<div>${name}</div>`);
-      liElement.append(`<div>${created_at}</div>`);
+      liElement.append(`<b>${name}</b>`);
+      liElement.append(`<span>${message}</span>`);
+      liElement.append(`<span>${created_at}</span>`);
 
-      olMessagesList.append(liElement);
+      ulChats.append(liElement);      
+      scrollUpdate();
     }
 
     // 受信したイベントを処理
@@ -57,57 +66,79 @@
         }
       });
     });
+
+    scrollUpdate();
   });  
 </script>
+
+<style>
+    #div-message_area {
+        width:100%;
+        height: 400px;
+        border: 1px solid lightgray;
+        margin: 10px 0;
+        padding: 5px;
+        overflow-y: auto;
+    }
+</style>
 @endsection
 
 @section('content')
-<section>
-  {{-- メッセンジャ画面ー --}}
-  <div>
-    <h3>チャットリスト</h3>
-    <ul id='ol-messages-list'>
-      @foreach($chats as $chat)
-      <li>
-        <div>
-          @if($chat['is_user'])
-          me
-          @else
-          {{ $chat['name'] }}
-          @endif
-        </div>
-        <div>
-          {{ $chat['message'] }}
-        </div>
-        <div>
-          {{ $chat['created_at'] }}
-        </div>
-      </li>
-      @endforeach
-    </ul>
-  </div>
+<div class="container">
+  <div class="row justify-content-center">
+      <div class="col-md-8">
+          <div class="card">
+              <div class="card-header">チャットルーム</div>
 
-  {{-- チャット送信 --}}
-  <div>
-    <input type="text" name="message" id="input-text-message">
-    <input type="button" id="input-button-send" value="send">
-  </div>
+              <div class="card-body">
+                  @if (session('status'))
+                      <div class="alert alert-success" role="alert">
+                          {{ session('status') }}
+                      </div>
+                  @endif
 
-  {{-- 参加者リスト --}}
-  <div>
-    <h3>参加者リスト</h3>
-    <ol id='ol_participants_list'>
-      @foreach($participants as $participant)
-        <li>
-          <div>
-            {{ $participant['name'] }}
+                  <div id="div-message_area">
+                      {{-- メッセンジャ画面ー --}}
+                      <ul id="ul-chats">
+                          @foreach($chats as $chat)
+                          <li>
+                              <b>
+                                @if($chat->is_user)
+                                me
+                                @else
+                                {{ $chat->name }}
+                                @endif
+                              </b>
+                              <span>{{ $chat->message }}</span>
+                              <span>{{ $chat->created_at }}</span>
+                          </li>
+                          @endforeach
+                      </ul>
+                  </div>
+                  {{-- チャット送信 --}}
+                  <div>
+                      <input type="text" name="message" id="input-text-message">
+                      <input type="button" id="input-button-send" value="send">
+                  </div>
+                  {{-- 参加者リスト --}}
+                  <div>
+                    <h3>参加者リスト</h3>
+                    <ol id='ol_participants_list'>
+                      @foreach($participants as $participant)
+                        <li>
+                          <div>
+                            {{ $participant->name }}
+                          </div>
+                          <div>
+                            {{ $participant->photo }}
+                          </div>
+                        </li>
+                      @endforeach
+                    </ol>
+                  </div>
+              </div>
           </div>
-          <div>
-            {{ $participant['photo'] }}
-          </div>
-        </li>
-      @endforeach
-    </ol>
+      </div>
   </div>
-</section>
+</div>
 @endsection
