@@ -6,9 +6,14 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use DB;
+use Auth;
+
 class User extends Authenticatable
 {
     use Notifiable;
+
+    use \HighIdeas\UsersOnline\Traits\UsersOnlineTrait;
 
     // 01. テーブルの属性を定義
     /**
@@ -60,4 +65,27 @@ class User extends Authenticatable
     }
 
     // 03. インスタンスメッソドを実装
+    public function isFriend($argUserId) {
+        return $this->friends()->where('friend_id', $argUserId)->exists();
+    }
+
+    public static function searchWhereEmail($argEmail, $argIncludeFriends = true) {
+        $query = SELF::where('email', 'like', "%{$argEmail}%")->where('id', '<>', Auth::user()->id);
+        $friendsId = Auth::user()->friends()->pluck('friend_id')->all();
+
+        if($argIncludeFriends) {
+            // 友達を含めて検索
+            $idMerged = 'null';
+            if(sizeof($friendsId) > 0) {
+                $idMerged = implode(', ', $friendsId);
+            }
+
+            $query = $query->select(DB::raw("id, name, email, case when id in({$idMerged}) then true else false end as 'is_friend'"));
+        } else {
+            // 友達を除いて検索
+            $query = $query->whereNotIn('id', $friendsId);
+        }
+
+        return $query;
+    }
 }

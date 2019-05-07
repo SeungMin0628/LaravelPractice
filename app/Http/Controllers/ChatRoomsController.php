@@ -17,8 +17,6 @@ use Carbon;
 
 /******************************
   課題
-    ＊　index 関数の作動方式をもっと綺麗にする
-    ＊　ユーザーが自分の友達につけた名前がある場合、それを優先する
 
 *******************************/
 class ChatRoomsController extends Controller
@@ -35,10 +33,11 @@ class ChatRoomsController extends Controller
 
   // チャットルームのリストを出力
   public function index() {
-    // 01. チャットルームのデータを獲得
+    // 01. 変数を定義
     $chatrooms = [];
     $rooms = User::find(Auth::user()->id)->participatingRooms()->get()->all();
 
+    // 02. チャットルームのデータを取得
     foreach($rooms as $room) {
       // 必要なデータを獲得
       $myParticipateInfo = $room->participants()->where('user_id', '=', Auth::user()->id)->first();
@@ -57,7 +56,7 @@ class ChatRoomsController extends Controller
       ];
     };
 
-    // 02. 最新のチャットの順番で整列
+    // 最新のチャットの順番で整列
     usort($chatrooms, function($a, $b) {
       $aTime = Carbon::createFromFormat('Y-m-d H:i:s', $a->last_chat_time);
       $bTime = Carbon::createFromFormat('Y-m-d H:i:s', $b->last_chat_time);
@@ -65,8 +64,14 @@ class ChatRoomsController extends Controller
       return $aTime->lt($bTime);
     });
 
-    // 03. データをビュー側に返還
-    return view('chatrooms.index')->with('chatrooms', $chatrooms);
+    // 03. 友達のリストを出力
+    $friends = Auth::user()->friends()->with('user')->get()->all();
+
+    // 04. データをビュー側に返還
+    return view('chatrooms.index')->with([
+        'chatrooms' => $chatrooms,
+        'friends'   => $friends,
+      ]);
   }
 
   /*
@@ -81,7 +86,7 @@ class ChatRoomsController extends Controller
 
     // 02. そのチャットルームの参加者たちのリストを検索
     $chatroom = ChatRoom::find($argId);
-    // $participateInfoOfUser = $chatroom->participantsWhereCurrentUser(Auth::user()->id, true)->first();
+    $myParticipateInfo = $chatroom->participantsWhereCurrentUser(Auth::user()->id, true)->first();
     $participantList = $chatroom->participantsWhereCurrentUser(Auth::user()->id, false)->get()->all();
 
     foreach($participantList as $participant) {
@@ -117,6 +122,7 @@ class ChatRoomsController extends Controller
     // 04. データをビュー側に伝送
     return view('chatrooms.show')->with([
       'chatroom_id'   => $argId,
+      'chatroom_name' => $myParticipateInfo->getChatRoomInfo()->name,
       'chats'         => $chats,
       'participants'  => $participants,
       'chatroom'      => $argId,

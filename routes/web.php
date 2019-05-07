@@ -25,5 +25,7 @@ Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCall
 // chatsのルーティングを設定
 Route::get('/', 'ChatRoomsController@index');
 Route::resource('chatrooms', 'ChatRoomsController');
-Route::get('/chatrooms/friends/{friends}', 'ChatRoomsController@startChatWithFriend');
 Route::resource('chatrooms.chats', 'ChatsController')->only(['store']);
+Route::resource('friends', 'FriendsController')->only(['store']);
+
+Route::get('/users/search', 'UsersController@search')->name('users.search');
